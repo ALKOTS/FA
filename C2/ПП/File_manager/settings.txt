@@ -1,0 +1,1 @@
+path=D:\Proj\Python\Pract\File_manager\File_manager_dir
