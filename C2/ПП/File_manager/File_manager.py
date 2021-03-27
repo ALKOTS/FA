@@ -2,6 +2,7 @@ import os
 import shutil
 import pathlib
 import sys
+from help_f import help
 
 
 
@@ -57,6 +58,16 @@ def path_maker(path):
 default_path=name_changer(get_directory())
 path=default_path.copy()
 root_dir=path[len(path)-1]
+
+def rel_to_abs(name):
+    global path
+    if(str(type(name))=="<class 'list'>"):
+        name=' '.join(name)
+    path.append(name)
+    name=path_maker(path)
+    
+    path.pop()
+    return name
 
 def root_checker(path):
     if(not root_dir in path or default_path[0:default_path.index(root_dir):]!=path[0:path.index(root_dir):]):
@@ -134,8 +145,6 @@ def create(name):
             mkdir(name[:-1:])
     
     path.append(name[len(name)-1])
-    
-    
    
     try:
         f=open(path_maker(path),"x") 
@@ -148,16 +157,15 @@ def create(name):
     path.pop()
         
 def rename(name):
-    new_name=input("Enter new name \n")
-    if(len(name)>1):
-        temp=new_name
-        new_name=name[:-1:]
-        new_name.append(temp)
-    os.rename(path_maker(name),path_maker(new_name))
+    global path
+    new_name=rel_to_abs(input("Enter new name \n"))
+    name=rel_to_abs(name)
+    os.rename(name,new_name)
 
 
 def read(name):
-    name=path_maker(name)
+    global path
+    name=rel_to_abs(name)
     try:
         f=open(name,"r")
         print(f.read())
@@ -165,20 +173,17 @@ def read(name):
         print('File does not excist')
 
 def remove(name):
-    name=path_maker(name)
+    global path
+    name=rel_to_abs(name)
     try:
         os.remove(name) 
     except FileNotFoundError:
         print('File does not excist')
 
-def copy(name): #cant copy for some reason
+def copy(name): 
     global path
-    
-    
     new_folder=path[0:path.index(root_dir):]
-    
     folder_path=name_changer(input("Enter a full folder path\n"))
-   
     new_folder.extend(folder_path)
     
     if(len(name)>1):
@@ -195,8 +200,6 @@ def copy(name): #cant copy for some reason
             if(folder!=new_folder):
                 print('Unable to reach the desired folder')
             else:
-                # print(path_maker(name))
-                # print(path_maker(folder))
                 try:
                     shutil.copytree(path_maker(name),path_maker(folder))
                 except NotADirectoryError:
@@ -210,7 +213,8 @@ def move(name):
     remove(name)
 
 def write(name):
-    name=path_maker(name)
+    global path
+    name=rel_to_abs(name)
     try:
         f=open(name,"a")
         txt=input("Введите текст \n")
@@ -221,6 +225,7 @@ def write(name):
 
 def ls(name): 
     print(os.listdir(path_maker(path)))
+
 
 commands={
     'mkdir':mkdir, 
@@ -233,7 +238,8 @@ commands={
     'copy':copy,
     'move':move,
     'write':write,
-    'ls':ls
+    'ls':ls,
+    'help':help
     }
 
 
@@ -243,6 +249,6 @@ while True:
 
     try:
         commands[command[0]](name_changer(' '.join(command[1::])))
-        print(path)
+        
     except IndexError:
         commands[command[0]]("")
