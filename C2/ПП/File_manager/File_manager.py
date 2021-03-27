@@ -109,7 +109,7 @@ def mkdir(name):
   
             os.mkdir(path_maker(path))
         except:
-            print('Unable to create directory. Try another location')
+            print('Unable to create directory. Try another location or check the root location')
 
     
 def rmdir(name):
@@ -174,7 +174,7 @@ def remove(name):
 def copy(name): #cant copy for some reason
     global path
     
-    print(name)
+    
     new_folder=path[0:path.index(root_dir):]
     
     folder_path=name_changer(input("Enter a full folder path\n"))
@@ -189,14 +189,18 @@ def copy(name): #cant copy for some reason
         name=path
 
         try:
-            
+             
             folder=root_checker(new_folder)
+            
             if(folder!=new_folder):
                 print('Unable to reach the desired folder')
             else:
-                print(path_maker(name))
-                print(path_maker(folder))
-                shutil.copy2(path_maker(name),path_maker(folder))
+                # print(path_maker(name))
+                # print(path_maker(folder))
+                try:
+                    shutil.copytree(path_maker(name),path_maker(folder))
+                except NotADirectoryError:
+                    shutil.copy2(path_maker(name),path_maker(folder))
         except FileNotFoundError:
             print('File does not excist')
         path.pop()
