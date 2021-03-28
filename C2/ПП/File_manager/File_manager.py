@@ -4,8 +4,6 @@ import pathlib
 import sys
 from help_f import help
 
-
-
 def input_check():
     return 0
 
