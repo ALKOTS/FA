@@ -27,9 +27,17 @@ def makyr3(step):
     result.append(step * np.diagonal(res))
     return res
 
-def mat_power_skip(left, right):   
+def mat_power_skip(left, right, step, res1=0, res2=0):   
     rn = range(len(left))
-    return np.array([[sum(left[i, m] * right[m, j] if m != j else 0 for m in rn) for j in rn] for i in rn])
+    right=np.array([[sum(left[i, m] * right[m, j] if m != j else 0 for m in rn) for j in rn] for i in rn])
+    if(res1>0):
+        res1+=right
+    if(res2>0):
+        res2+=(step-993)*right
+    if(step>0):
+        mat_power_skip(left, right, res1=res1, res2=res2)
+    else:
+        return (right, res1, res2)
 
 def matrix_printer(matrix):
     for row in matrix:
@@ -77,32 +85,28 @@ print(f"\n2. вероятности состояний системы спуст
       f"момент вероятность состояний были следующими step={A}:")
 print((A.dot(np.linalg.matrix_power(trans_mat, step))))
 
-#3
+#3 to test
 
 step, state_1, state_2 = 6, 2, 14
-prev = np.copy(trans_mat)
-for i in range(step - 1):
-    prev = mat_power_skip(trans_mat, prev)
+
+prev = mat_power_skip(trans_mat, np.copy(trans_mat), step-1)[0]
+
 print(f"\n3. вероятность первого перехода за {step} шагов из состояния {state_1} в состояние {state_2}:")
 print((prev[state_1 - 1, state_2 - 1]))
 
-#4
+#4 to test
 
 step, state_1, state_2 = 8, 3, 5
-prev, res = np.copy(trans_mat), np.copy(trans_mat)
-for i in range(step - 1):
-    prev = mat_power_skip(trans_mat, prev)
-    res += prev
+res = mat_power_skip(trans_mat, step-1, np.copy(trans_mat), res1=np.copy(trans_mat))[1]
+  
 print(f"\n4. вероятность перехода из состояния {state_1} в состояние {state_2} не позднее чем за {step} шагов:")
 print((res[state_1 - 1, state_2 - 1]))
 
-#5
+#5 to test
 
 state_1, state_2 = 12, 8
-prev, res = np.copy(trans_mat), np.copy(trans_mat)
-for i in range(993):
-    prev = mat_power_skip(trans_mat, prev)
-    res += i * prev
+res2 = mat_power_skip(trans_mat, np.copy(trans_mat),993,res2=np.copy(trans_mat))[2]
+    
 print(f"\n5. среднее количество шагов для перехода из состояния {state_1} в состояние {state_2}:")
 print((res[state_1 - 1, state_2 - 1]))
 
