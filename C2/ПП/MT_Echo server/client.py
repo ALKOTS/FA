@@ -89,6 +89,7 @@ def recv():
                 logging.info(f"Client {sock.getsockname()} recieved data: {pickle.loads(data)[1]}")
             else:
                 data = pickle.loads(data)[1]
+                
         except OSError:
             break
 
@@ -98,6 +99,7 @@ statuses={
 	"passwd":sendPasswd,
 	"success":success
 }
+
 user_port = input("Enter port (enter for default):")
 if not port_validation(user_port):
 	user_port = PORT_DEFAULT
